@@ -1,33 +1,28 @@
 {
   "todos": [
     {
-      "id": "53fc",
-      "content": "영어숙제",
+      "id": "a198",
+      "content": "아침먹기",
       "completed": true
     },
     {
-      "id": "2a6b",
-      "content": "마라탕먹기",
-      "completed": false
-    },
-    {
-      "id": "cc3b",
-      "content": "학교가기",
+      "id": "65a5",
+      "content": "점심먹기",
       "completed": true
     },
     {
-      "id": "96c5",
-      "content": "줄넘기방과후",
+      "id": "351f",
+      "content": "코딩강의",
+      "completed": true
+    },
+    {
+      "id": "63ca",
+      "content": "코딩연습",
       "completed": false
     },
     {
-      "id": "e77f",
-      "content": "수학 원리셈",
-      "completed": false
-    },
-    {
-      "id": "b0fd",
-      "content": "수학 디딤돌",
+      "id": "4f74",
+      "content": "저녁먹기",
       "completed": false
     }
   ]
