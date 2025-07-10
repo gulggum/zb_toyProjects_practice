@@ -1,0 +1,34 @@
+{
+  "todos": [
+    {
+      "id": "53fc",
+      "content": "영어숙제",
+      "completed": true
+    },
+    {
+      "id": "2a6b",
+      "content": "마라탕먹기",
+      "completed": false
+    },
+    {
+      "id": "cc3b",
+      "content": "학교가기",
+      "completed": true
+    },
+    {
+      "id": "96c5",
+      "content": "줄넘기방과후",
+      "completed": false
+    },
+    {
+      "id": "e77f",
+      "content": "수학 원리셈",
+      "completed": false
+    },
+    {
+      "id": "b0fd",
+      "content": "수학 디딤돌",
+      "completed": false
+    }
+  ]
+}

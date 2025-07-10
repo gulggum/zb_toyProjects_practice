@@ -32,13 +32,18 @@ button > i {
   box-shadow: 6px 6px 16px #91bff6;
 }
 
+@media screen and (max-width: 700px) {
+  .wrap {
+    max-width: 80vw;
+  }
+}
 h2 {
   font-size: 28px;
   font-weight: 900;
 }
 
 .header {
-  width: 100%;
+  width: 93%;
   position: absolute;
   top: 0;
   left: 0;
@@ -136,4 +141,9 @@ h2 {
 
 .edit_buttons {
   display: none;
+}
+
+.item .content input[type="checkbox"]:checked + label {
+  text-decoration: line-through;
+  color: #999;
 }
