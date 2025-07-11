@@ -76,6 +76,7 @@ h2 {
 
 .todos {
   margin-top: 150px;
+
   overflow: auto;
 }
 
@@ -146,4 +147,21 @@ h2 {
 .item .content input[type="checkbox"]:checked + label {
   text-decoration: line-through;
   color: #999;
+}
+
+.pagination {
+  position: absolute;
+  left: 50%;
+  bottom: 25px;
+  transform: translateX(-50%);
+  display: flex;
+}
+
+.pagination button {
+  width: 50px;
+  height: 30px;
+  color: #555555;
+  margin: 0 2px;
+  font-weight: 700;
+  border-radius: 6px;
 }

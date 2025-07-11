@@ -3,6 +3,69 @@ const $todoForm = document.querySelector(".todo_form");
 const $todoInput = document.querySelector(".todo_input");
 const $todos = document.querySelector(".todos");
 
+// 페이지네이션
+const $pagination = document.querySelector(".pagination");
+const limit = 5; //한페이지당 보여줄 todo개수
+const totalCount = 100;
+const pageCount = 5; //한번에 보여줄 페이지 번호 버튼의 개수
+let currentPage = 3;
+
+const pagination = () => {
+  let totalPage = Math.ceil(totalCount / limit);
+  let pageGroup = Math.ceil(currentPage / pageCount);
+  console.log("전체페이지" + totalPage);
+  console.log("페이지그룹:" + pageGroup);
+
+  let lastNum = pageGroup * pageCount;
+  if (lastNum > totalPage) {
+    lastNum = totalPage;
+  }
+  let firstNum = lastNum - (pageCount - 1);
+
+  const next = lastNum + 1;
+  const prev = firstNum - 1;
+
+  let html = "";
+
+  //첫페이지 그룹이 아닐때만 이전 버튼 보이기
+  if (prev > 0) {
+    html += `<button class="prev" data-fn="prev">이전</button>`;
+  }
+
+  //현재 그룹에 해당하는 페이지 번호들을 버튼으로 만듦
+  for (let i = firstNum; i <= lastNum; i++) {
+    html += `<button class="pageNum" id="page_${i}">${i}</button>`;
+  }
+
+  // 마지막 페이지 그룹이 아닐때만 다음 버튼 보이기
+  if (lastNum < totalPage) {
+    html += `<button class="next" data-fn="next">다음</button>`;
+  }
+
+  $pagination.innerHTML = html;
+
+  //현재 페이지 번호 버튼 color적용
+  const $currentPageNum = document.querySelector(`#page_${currentPage}`);
+  $currentPageNum.style.color = "orange";
+
+  const $currentPageNumAll = document.querySelectorAll(".pagination button");
+
+  $currentPageNumAll.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (btn.dataset.fn === "prev") {
+        currentPage = prev;
+      } else if (btn.dataset.fn === "next") {
+        currentPage = next;
+      } else {
+        currentPage = Number(btn.innerText);
+        console.log(currentPage);
+      }
+      pagination(); //버튼 다시 렌더링
+      getTodos(); //현재 currentPage에 해당하는 데이터 fetch
+    });
+  });
+};
+
 const createTodoElement = (item) => {
   const { id, content, completed } = item;
   const isChecked = completed ? "checked" : "";
@@ -42,8 +105,9 @@ const createTodoElement = (item) => {
 //json_server 데이터 불러오기
 const getTodos = async () => {
   try {
-    const res = await fetch(API_URL);
+    const res = await fetch(`${API_URL}?_page=${currentPage}&_limit=${limit}`);
     const todosData = await res.json();
+    $todos.innerHTML = ""; //페이지 변경시 기존 목록 지우기
     renderAllTodos(todosData);
   } catch (error) {
     throw new Error("데이터를 불러오지 못했습니다");
@@ -145,6 +209,7 @@ const toggleCheck = async (e) => {
 const init = () => {
   window.addEventListener("DOMContentLoaded", () => {
     getTodos();
+    pagination();
   });
   $todoForm.addEventListener("submit", addTodo);
   $todos.addEventListener("click", changeEditEl);
