@@ -5,6 +5,20 @@
     return document.querySelector(target);
   };
 
+  //throttle이용하여 성능 최적화시키기
+  const throttle = (callback, limit) => {
+    let waiting = false;
+    return function () {
+      if (!waiting) {
+        callback.apply(this, arguments);
+        waiting = true;
+        setTimeout(() => {
+          waiting = false;
+        }, limit);
+      }
+    };
+  };
+
   const $progressBar = get(".progress_bar");
 
   const onScroll = () => {
@@ -21,7 +35,7 @@
   };
 
   const init = () => {
-    window.addEventListener("scroll", onScroll);
+    window.addEventListener("scroll", throttle(onScroll, 10));
   };
   init();
 })();
