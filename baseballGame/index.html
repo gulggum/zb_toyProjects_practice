@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <title>Baseball</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+
+  <body>
+    <main>
+      <section>
+        <h1>야구게임 ⚾</h1>
+        <div class="ball_answer">정답은?</div>
+        <form>
+          <label for="question"></label>
+          <input
+            class="ball_input"
+            type="number"
+            id="question"
+            name="question"
+            size="4"
+          />
+          <button>도전</button>
+        </form>
+        <button class="resetBtn">다시하기</button>
+        <div class="result"></div>
+      </section>
+    </main>
+    <script src="./app.js"></script>
+  </body>
+</html>
