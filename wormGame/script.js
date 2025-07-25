@@ -19,18 +19,22 @@
 
   // 게임상태 저장할 변수
   let start = 0;
+  let lastTime = 0; //마지막 프레임 시간
+  const TILE_SIZE = 20;
+  const CANVAS_SIZE = 400;
 
   let option = {
     highScore: localStorage.getItem("score") || 0,
     gameEnd: true, //게임이 끝났는지
     direction: 6, //현재 방향(6은 오른쪽(임의로 설정해준 숫자임))
     snake: [
-      { x: 10, y: 10, direction: 6 }, //머리
-      { x: 10, y: 20, direction: 6 }, //몸통
-      { x: 10, y: 30, direction: 6 }, //꼬리
+      { x: TILE_SIZE, y: TILE_SIZE, direction: 6 }, //머리
+      { x: TILE_SIZE, y: TILE_SIZE * 2, direction: 6 }, //몸통
+      { x: TILE_SIZE, y: TILE_SIZE * 3, direction: 6 }, //꼬리
     ],
     food: { x: 0, y: 0 },
     score: 0,
+    speed: 10, // 처음속도(프레임/초)
   };
 
   // 방향키->숫자 변환(보기쉽게 키보드에 있는 숫자로 적용함)
@@ -67,12 +71,12 @@
   //캔버스 판 배경 그리기
   const buildBoard = () => {
     ctx.fillStyle = colorSet.board; //보드색 가져와서 채워줌
-    ctx.fillRect(0, 0, 400, 400); //(x,y,width,height) 해당 영역 채우기(사각형 칠하기)
+    ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE); //(x,y,width,height) 해당 영역 채우기(사각형 칠하기)
   };
   //뱀 한칸 그리기
   const buildSnake = (ctx, x, y, head = false) => {
     ctx.fillStyle = head ? colorSet.snakeHead : colorSet.snakeBody;
-    ctx.fillRect(x, y, 10, 10); //한 칸은 10x10
+    ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE); //한 칸크기 ex(10x10)
   };
   //뱀 전체 그리기(원형)
   const setSnake = () => {
@@ -90,7 +94,13 @@
   const buildFood = (ctx, x, y) => {
     ctx.beginPath(); //새로운 경로 시작
     ctx.fillStyle = colorSet.food;
-    ctx.arc(x + 5, y + 5, 5, 0, 2 * Math.PI); //원 그리는 함수(x + 5, y + 5)->정가운데 좌표로 옮겨주기
+    ctx.arc(
+      x + TILE_SIZE / 2,
+      y + TILE_SIZE / 2,
+      TILE_SIZE / 2,
+      0,
+      2 * Math.PI
+    ); //원 그리는 함수(x + 5, y + 5)->정가운데 좌표로 옮겨주기
     ctx.fill(); //색 채우기(중요)
   };
 
@@ -102,16 +112,16 @@
     //뱀 이동방향 계산
     switch (option.direction) {
       case 4:
-        x = setDirection(400, x - 10);
+        x -= TILE_SIZE;
         break;
       case 6:
-        x = setDirection(400, x + 10);
+        x += TILE_SIZE;
         break;
       case 2:
-        y = setDirection(400, y + 10);
+        y += TILE_SIZE;
         break;
       case 8:
-        y = setDirection(400, y - 10);
+        y -= TILE_SIZE;
     }
 
     const snake = [{ x, y, direction: option.direction }]; //새로운 머리
@@ -123,14 +133,16 @@
     option.snake = snake;
   };
 
-  //뱀이 벽 밖으로 나가지 않게, 자동으로 반대편으로 튕겨주기
-  const setDirection = (num, value) => {
-    while (value < 0) {
-      value += num;
-    }
-    return value % num;
-  };
-  //
+  // //뱀이 벽 밖으로 나가지 않게, 자동으로 반대편으로 튕겨주기
+  // const setDirection = (num, value) => {
+  //   while (value < 0) {
+  //     value += num;
+  //   }
+  //   return value % num;
+  // };
+
+  //벽에 부딪히면 게임오버(벽통과x)
+  const setDirection = (value) => value;
 
   // 먹이 먹기
   const getFood = () => {
@@ -141,6 +153,7 @@
 
     if (snakeX === foodX && snakeY === foodY) {
       option.score++;
+      option.speed = Math.min(option.speed + 1, 30); //최대 30프레임제한
       $score.innerHTML = `점수 : ${option.score}점`;
       setBody(); //뱀 몸통 늘리기
       randomFood(); //먹이 랜덤배치
@@ -157,16 +170,16 @@
 
     switch (direction) {
       case 4: //4번키 왼쪽으로 움직이면 꼬리가 반대쪽에 붙도록
-        x += 10;
+        x += TILE_SIZE;
         break;
       case 6:
-        x -= 10;
+        x -= TILE_SIZE;
         break;
       case 8:
-        y -= 10;
+        y -= TILE_SIZE;
         break;
       case 2:
-        y += 10;
+        y += TILE_SIZE;
         break;
     }
     option.snake.push({ x, y, direction }); //새로운 꼬리 추가
@@ -174,8 +187,8 @@
 
   //먹이 위치 랜덤
   const randomFood = () => {
-    let x = Math.floor(Math.random() * 40) * 10;
-    let y = Math.floor(Math.random() * 40) * 10;
+    let x = Math.floor(Math.random() * (CANVAS_SIZE / TILE_SIZE)) * TILE_SIZE;
+    let y = Math.floor(Math.random() * (CANVAS_SIZE / TILE_SIZE)) * TILE_SIZE;
 
     //뱀 몸통이랑 겹치면 다시 생성
     while (option.snake.some((part) => part.x === x && part.y === y)) {
@@ -197,18 +210,27 @@
 
   const isGameOver = () => {
     const head = option.snake[0];
+
+    //벽에 부딪히면 게임오버
+    if (
+      head.x < 0 ||
+      head.x >= CANVAS_SIZE ||
+      head.y < 0 ||
+      head.y >= CANVAS_SIZE
+    ) {
+      return true;
+    }
+    //자기 몸에 부딪히면 게임오버
     return option.snake.some(
       (part, index) => index !== 0 && head.x === part.x && head.y === part.y
     );
   };
 
   const play = (timestamp) => {
-    start++;
-
     if (option.gameEnd) return;
 
     //게임 속도 조절(초당10프레임)
-    if (timestamp - start > 1000 / 10) {
+    if (timestamp - lastTime > 1000 / option.speed) {
       if (isGameOver()) {
         option.gameEnd = true;
         setHighScore();
@@ -222,7 +244,7 @@
       setSnake();
       getFood();
 
-      start = timestamp; //타이밍 초기화
+      lastTime = timestamp; //타이밍 초기화
     }
 
     window.requestAnimationFrame(play); //무한루프
@@ -252,17 +274,18 @@
           highScore: localStorage.getItem("score") || 0,
           gameEnd: false,
           direction: 6, //시작방향 : 오른쪽
+          speed: 10,
           snake: [
-            { x: 10, y: 10, direction: 6 },
-            { x: 10, y: 20, direction: 6 },
-            { x: 10, y: 30, direction: 6 },
+            { x: TILE_SIZE, y: TILE_SIZE, direction: 6 },
+            { x: TILE_SIZE, y: TILE_SIZE * 2, direction: 6 },
+            { x: TILE_SIZE, y: TILE_SIZE * 3, direction: 6 },
           ],
           food: { x: 0, y: 0 },
           score: 0,
         };
         $score.innerHTML = `점수 : 0점`;
         $highScore.innerHTML = `최고점수 : ${option.highScore}점`;
-
+        lastTime = 0; //속도 초기화
         randomFood(); //먹이 위치 랜덤 생성
         window.requestAnimationFrame(play); //게임 루프 시작
       }
