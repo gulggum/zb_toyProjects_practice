@@ -1,0 +1,44 @@
+body {
+  width: 100%;
+  height: 100%;
+}
+main {
+  width: 90vw;
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* 텍스트나 요소가 실수로 선택되는 걸 방지 */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.canvas {
+  border: 1px solid orange;
+}
+
+.startBtn {
+  width: 100px;
+  height: 50px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.3rem;
+  font-weight: 500px;
+  cursor: pointer;
+  background-color: orange;
+}
+
+.score {
+  font-size: 1.5rem;
+  margin: 10px 0;
+}
+.highScore {
+  margin-bottom: 20px;
+}
+.startBtn:hover {
+  background-color: black;
+  color: white;
+}
